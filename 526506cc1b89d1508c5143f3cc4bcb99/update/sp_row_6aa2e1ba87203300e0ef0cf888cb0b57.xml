@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_row">
+    <sp_row action="INSERT_OR_UPDATE">
+        <class_name/>
+        <order>1</order>
+        <sp_column/>
+        <sp_container display_value="Catalog Item - Container 3">c6a2e1ba87203300e0ef0cf888cb0b29</sp_container>
+        <sys_class_name>sp_row</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-04-05 07:33:03</sys_created_on>
+        <sys_id>6aa2e1ba87203300e0ef0cf888cb0b57</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>1</sys_name>
+        <sys_package display_value="Service Portal - Service Catalog (do not activate...see plugin description)" source="com.glide.service-portal.service-catalog">303a60af1b251010e7004229bc4bcbfd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
+        <sys_update_name>sp_row_6aa2e1ba87203300e0ef0cf888cb0b57</sys_update_name>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-02 19:54:35</sys_updated_on>
+    </sp_row>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>182601fd6000000002</claim_timestamp>
+        <metadata_update_name>sp_row_6aa2e1ba87203300e0ef0cf888cb0b57</metadata_update_name>
+        <previous_claim_app_version>1.0.0</previous_claim_app_version>
+        <previous_claim_name>Custom Service Portal Widgets</previous_claim_name>
+        <previous_claim_scope>526506cc1b89d1508c5143f3cc4bcb99</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-08-02 19:54:35</sys_created_on>
+        <sys_id>c3009d4a1b8ddd508c5143f3cc4bcb05</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-02 19:54:35</sys_updated_on>
+    </sys_claim>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>182601fd6000000001</claim_timestamp>
+        <metadata_update_name>sp_row_6aa2e1ba87203300e0ef0cf888cb0b57</metadata_update_name>
+        <previous_claim_app_version/>
+        <previous_claim_name>com.glide.service-portal.service-catalog</previous_claim_name>
+        <previous_claim_scope>com.glide.service-portal.service</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-08-02 19:54:35</sys_created_on>
+        <sys_id>87009d4a1b8ddd508c5143f3cc4bcb05</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-02 19:54:35</sys_updated_on>
+    </sys_claim>
+</record_update>

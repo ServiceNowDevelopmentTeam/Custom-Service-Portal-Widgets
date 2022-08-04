@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">fef80b70d7000200a9ad1e173e24d438</sp_column>
+        <sp_widget display_value="SC Catalog Item Paginated">2675c2cc1b89d1508c5143f3cc4bcbc4</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2015-11-04 03:06:07</sys_created_on>
+        <sys_id>e2656985ff630200ba13ffffffffff68</sys_id>
+        <sys_mod_count>19</sys_mod_count>
+        <sys_name>SC Catalog Item</sys_name>
+        <sys_package display_value="Service Portal - Service Catalog (do not activate...see plugin description)" source="com.glide.service-portal.service-catalog">303a60af1b251010e7004229bc4bcbfd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
+        <sys_update_name>sp_instance_e2656985ff630200ba13ffffffffff68</sys_update_name>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-01 19:25:28</sys_updated_on>
+        <title>SC Catalog Item</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"show_add_cart_button": {
+		"value": "true",
+		"displayValue": "true"
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=e2656985ff630200ba13ffffffffff68"/>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>1825aded3700000001</claim_timestamp>
+        <metadata_update_name>sp_instance_e2656985ff630200ba13ffffffffff68</metadata_update_name>
+        <previous_claim_app_version>1.0.0</previous_claim_app_version>
+        <previous_claim_name>Custom Service Portal Widgets</previous_claim_name>
+        <previous_claim_scope>526506cc1b89d1508c5143f3cc4bcb99</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-08-01 19:25:28</sys_created_on>
+        <sys_id>3ecfbb651b495d508c5143f3cc4bcb99</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-01 19:25:28</sys_updated_on>
+    </sys_claim>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>1825aded36f0000001</claim_timestamp>
+        <metadata_update_name>sp_instance_e2656985ff630200ba13ffffffffff68</metadata_update_name>
+        <previous_claim_app_version/>
+        <previous_claim_name>com.glide.service-portal.service-catalog</previous_claim_name>
+        <previous_claim_scope>com.glide.service-portal.service</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-08-01 19:25:28</sys_created_on>
+        <sys_id>f2cfbb651b495d508c5143f3cc4bcb9a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-01 19:25:28</sys_updated_on>
+    </sys_claim>
+</record_update>

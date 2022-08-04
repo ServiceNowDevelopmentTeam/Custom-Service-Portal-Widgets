@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>global.getVariableSetsForItem</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Retrieves a list of variable sets that are related to a catalog item and differentiates them as either Single Row or Multi Row sets</description>
+        <name>getVariableSetsForItem</name>
+        <script><![CDATA[var getVariableSetsForItem = function(itemId) {
+    var result = {
+        'singlerow': [],
+        'multirow': [],
+		'singlerowOrder': {}
+    };
+
+    var gr = new GlideRecord('io_set_item');
+    gr.addQuery('sc_cat_item', itemId);
+    gr.orderBy('order');
+    gr.query();
+    while (gr.next()) {		
+        if (gr.variable_set.type.toString() == 'one_to_one') {
+            result.singlerow.push(gr.variable_set.sys_id.toString());
+			result.singlerowOrder[gr.variable_set.sys_id.toString()] = gr.order * 1;
+        }
+        else if (gr.variable_set.type.toString() == 'one_to_many') {
+            result.multirow.push({
+                'label': gr.variable_set.title.toString(),
+                'key': gr.variable_set.internal_name.toString(),
+                'order': gr.variable_set.order * 1,
+				'sys_id': gr.variable_set.sys_id.toString()
+            });
+        }
+        else {
+            throw new Error('Unrecognized type error in getVariableSetsForItem');
+        }
+    }
+
+    return result;
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-08-04 16:26:09</sys_created_on>
+        <sys_id>1663fa2a1bc9159062e50ed2cd4bcb0d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>getVariableSetsForItem</sys_name>
+        <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
+        <sys_update_name>sys_script_include_1663fa2a1bc9159062e50ed2cd4bcb0d</sys_update_name>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-04 16:26:09</sys_updated_on>
+    </sys_script_include>
+</record_update>

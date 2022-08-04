@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>global.getDefinedSectionsForItem</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Retrieves a list of Sections defined explicitly as a related list to a Catalog Item&#13;
+</description>
+        <name>getDefinedSectionsForItem</name>
+        <script><![CDATA[var getDefinedSectionsForItem = function(itemId) {
+	var results = [];
+	var containerMap = {};
+	var containers = [];
+	var multirows = [];
+	var result;
+	
+	function appendContainers(ids) {
+		var container = new GlideRecord('item_option_new');
+		container.addQuery('sys_id', 'IN', ids.join(','));
+		container.query();
+		while (container.next()) {
+			containerMap[container.sys_id.toString()].containers.push(container.name.toString());
+		}
+	}
+	
+	function appendMultirows(ids) {
+		var multirow = new GlideRecord('item_option_new_set');
+		multirow.addQuery('sys_id', 'IN', ids.join(','));
+		multirow.query();
+		while (multirow.next()) {
+			containerMap[multirow.sys_id.toString()].containers.push(multirow.internal_name.toString());
+		}
+	}
+	
+	var section = new GlideRecord('u_cat_item_form_section');
+	section.addQuery('catalog_item', itemId);
+	section.orderBy('order');
+	section.query();
+	while (section.next()) {
+		result = {
+			'label': section.name.toString(),
+			'key': section.sys_id.toString(),
+			'order': section.order.toString(),
+			'sys_id': section.sys_id.toString(),
+			'containers': []
+		};
+		results.push(result);
+		
+		section.include_containers.toString().split(',').forEach(function(containerId) {
+			containerMap[containerId] = result;
+			containers.push(containerId);
+		});
+		
+		section.include_multirow_set.toString().split(',').forEach(function(multirowId) {
+			containerMap[multirowId] = result;
+			multirows.push(multirowId);
+		});
+	}
+	
+	if (results.length > 0) {
+		appendContainers(containers);
+		appendMultirows(multirows);
+		return results;
+	}
+	else {
+		return;
+	}
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-08-04 16:27:33</sys_created_on>
+        <sys_id>eac3f6ea1bc9159062e50ed2cd4bcbab</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>getDefinedSectionsForItem</sys_name>
+        <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
+        <sys_update_name>sys_script_include_eac3f6ea1bc9159062e50ed2cd4bcbab</sys_update_name>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-08-04 16:42:04</sys_updated_on>
+    </sys_script_include>
+</record_update>

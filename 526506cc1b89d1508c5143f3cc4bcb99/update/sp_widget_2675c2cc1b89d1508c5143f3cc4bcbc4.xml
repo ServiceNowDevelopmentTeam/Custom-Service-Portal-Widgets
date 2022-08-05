@@ -1521,7 +1521,7 @@ li.cc-section.cc-selected::after {
 				options[embeddedWidgetOption] = localInput[embeddedWidgetOption];
 		});
 		data.orderItemModal = $sp.getWidget('widget-modal', {
-			embeddedWidgetId: 'sc-checkout', 
+			embeddedWidgetId: 'sc-checkout-copy', 
 			embeddedWidgetOptions: {
 				cart: {name: localInput.cart}, 
 				action: 'order_now', 
@@ -1529,9 +1529,7 @@ li.cc-section.cc-selected::after {
 				requested_for: {id:options.requested_for_id, displayValue:options.requested_for_display},
 				auto_redirect: options.auto_redirect,
 				parentParams: localInput.workspaceParams,
-				native_mobile: options.native_mobile,
-				isServiceWorkspace: options.isServiceWorkspace,
-				referrer: data.referrer
+				native_mobile: options.native_mobile
 			}, 
 			backdrop: 'static', 
 			keyboard: false, 
@@ -1656,7 +1654,7 @@ li.cc-section.cc-selected::after {
 		var cart_item_id = $sp.getParameter("sys_id");
 		var gr = new GlideRecord("sc_cart_item");
 		if (!gr.get(cart_item_id) || gr.cart != cart.getCartID() ||
-				(!new sn_sc.CatItem(gr.getValue('cat_item')).canView())) {
+			(!new sn_sc.CatItem(gr.getValue('cat_item')).canView())) {
 			data.recordFound = false;
 			return;
 		}
@@ -1943,14 +1941,14 @@ li.cc-section.cc-selected::after {
         <sys_created_by>Terry.Lillo</sys_created_by>
         <sys_created_on>2022-07-27 18:40:11</sys_created_on>
         <sys_id>2675c2cc1b89d1508c5143f3cc4bcbc4</sys_id>
-        <sys_mod_count>433</sys_mod_count>
+        <sys_mod_count>434</sys_mod_count>
         <sys_name>SC Catalog Item Paginated</sys_name>
         <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_widget_2675c2cc1b89d1508c5143f3cc4bcbc4</sys_update_name>
         <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-08-04 14:49:12</sys_updated_on>
+        <sys_updated_on>2022-08-05 13:04:05</sys_updated_on>
         <template><![CDATA[<div id="sc_cat_item" ng-if="::(data.recordFound && !data.not_for_mobile)" sn-atf-blacklist="IS_SERVICE_CATALOG">
   <sp-widget widget="c.orderItemModal" ng-if="c.orderItemModal"></sp-widget>
   <div class="row center-block" ng-if="::data.sc_cat_item" ng-class="{'native-mobile': options.native_mobile == 'true'}">

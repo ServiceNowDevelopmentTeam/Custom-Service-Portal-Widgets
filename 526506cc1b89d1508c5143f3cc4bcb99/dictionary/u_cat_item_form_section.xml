@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
-    <element label="Section" max_length="40" name="u_cat_item_form_section" type="collection">
+    <element label="Section" max_length="40" name="u_cat_item_form_section" sizeclass="2" type="collection">
         <element attributes="edge_encryption_enabled=true,encode_utf8=false" label="Catalog Item" max_length="32" name="catalog_item" read_only="true" reference="sc_cat_item" type="reference"/>
         <element attributes="edge_encryption_enabled=true,no_sort=true,slushbucket_ref_no_expand=true" label="Include Containers" max_length="4000" name="include_containers" reference="item_option_new" reference_qual="javascript: 'sys_idIN' + getInferredSectionsForItem(current.catalog_item.toString()).map(function(item) { return item.sys_id })" type="glide_list" use_reference_qualifier="advanced"/>
         <element attributes="edge_encryption_enabled=true,no_sort=true,slushbucket_ref_no_expand=true" label="Include MultiRow Set" max_length="4000" name="include_multirow_set" reference="item_option_new_set" reference_qual="javascript: 'sys_idIN' + getVariableSetsForItem(current.catalog_item.toString()).multirow.map(function(item) { return item.sys_id })" type="glide_list" use_reference_qualifier="advanced"/>

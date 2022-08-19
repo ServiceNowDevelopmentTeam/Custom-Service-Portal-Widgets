@@ -1941,14 +1941,14 @@ li.cc-section.cc-selected::after {
         <sys_created_by>Terry.Lillo</sys_created_by>
         <sys_created_on>2022-07-27 18:40:11</sys_created_on>
         <sys_id>2675c2cc1b89d1508c5143f3cc4bcbc4</sys_id>
-        <sys_mod_count>434</sys_mod_count>
+        <sys_mod_count>435</sys_mod_count>
         <sys_name>SC Catalog Item Paginated</sys_name>
         <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_widget_2675c2cc1b89d1508c5143f3cc4bcbc4</sys_update_name>
         <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-08-05 13:04:05</sys_updated_on>
+        <sys_updated_on>2022-08-19 15:39:35</sys_updated_on>
         <template><![CDATA[<div id="sc_cat_item" ng-if="::(data.recordFound && !data.not_for_mobile)" sn-atf-blacklist="IS_SERVICE_CATALOG">
   <sp-widget widget="c.orderItemModal" ng-if="c.orderItemModal"></sp-widget>
   <div class="row center-block" ng-if="::data.sc_cat_item" ng-class="{'native-mobile': options.native_mobile == 'true'}">
@@ -2082,7 +2082,7 @@ li.cc-section.cc-selected::after {
                   ${Update Wish List}
                 </button>
               </span>
-              <button ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="disableControls()" ng-click="triggerOnSubmit()" class="btn btn-primary" aria-live="assertive">{{submitButtonMsg}}</button>
+              <button id="submitButton" ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="disableControls()" ng-click="triggerOnSubmit()" class="btn btn-primary" aria-live="assertive">{{submitButtonMsg}}</button>
               <span ng-if="submitting" style="padding-left:4px">${Submitting...}</span>
               <span ng-if="validating" style="padding-left:4px">${Validating...}</span>
             </div>
@@ -2167,7 +2167,7 @@ li.cc-section.cc-selected::after {
             </button>
           </div>
           <div class="form-group m-b-xs" ng-if="c.options.native_mobile != 'true'">
-            <button ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="disableControls()" ng-click="triggerOnSubmit()" class="btn btn-primary btn-block">{{submitButtonMsg}}</button>
+            <button id="submitButton" ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="disableControls()" ng-click="triggerOnSubmit()" class="btn btn-primary btn-block">{{submitButtonMsg}}</button>
             <span ng-if="submitting" style="padding-left:4px">${Submitting...}</span>
             <span ng-if="validating" style="padding-left:4px">${Validating...}</span>
           </div>
@@ -2180,7 +2180,7 @@ li.cc-section.cc-selected::after {
               ${Update Cart}
             </button>
             <div class="form-group m-b-xs">
-              <button ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="disableControls()" ng-click="triggerOnSubmit()" class="btn btn-primary rounded m-l-lg padder-xl">{{submitButtonMsg}}</button>
+              <button id="submitButton" ng-if="::c.showOrderNowButton()" tabindex="0" name="submit" ng-disabled="disableControls()" ng-click="triggerOnSubmit()" class="btn btn-primary rounded m-l-lg padder-xl">{{submitButtonMsg}}</button>
               <span ng-if="submitting" style="padding-left:4px">${Submitting...}</span>
             </div>
           </div>

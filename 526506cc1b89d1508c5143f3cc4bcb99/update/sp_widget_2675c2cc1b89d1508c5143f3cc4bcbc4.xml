@@ -1935,20 +1935,46 @@ li.cc-section.cc-selected::after {
 				updatePriceForListCollector(field);
 		}
 	}
-})()]]></script>
+		function getEstimatedDeliveryDate() {
+		var startDate = new GlideDateTime();
+		
+		var cat_item = new GlideRecord('sc_cat_item');
+		cat_item.get($sp.getParameter("sys_id"));
+		if(cat_item.getDisplayValue('delivery_time')) {
+			//calculate the duration
+			var dur = cat_item.delivery_time;
+			var dur_in_ms = 60*60*12*1000*(dur.getByFormat('dd')-1);
+			var dur_final = new GlideDuration(dur_in_ms);
+			
+			//schedule on 12 hour weekdays
+			var schedRec = new GlideRecord('cmn_schedule');
+			schedRec.get('name', '6-6 Weekdays');
+			var schedule = new GlideSchedule(schedRec.sys_id);
+			
+			//calc final date
+			var end = schedule.add(startDate, dur_final);
+			// return the calculated value without hours
+			return end.getDate().getDisplayValue();
+			// return the calculated value with hours
+			//return end.getDisplayValue();
+		}
+	}
+	data.delivery_date = getEstimatedDeliveryDate();
+}
+)()]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>Terry.Lillo</sys_created_by>
         <sys_created_on>2022-07-27 18:40:11</sys_created_on>
         <sys_id>2675c2cc1b89d1508c5143f3cc4bcbc4</sys_id>
-        <sys_mod_count>435</sys_mod_count>
+        <sys_mod_count>441</sys_mod_count>
         <sys_name>SC Catalog Item Paginated</sys_name>
         <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_widget_2675c2cc1b89d1508c5143f3cc4bcbc4</sys_update_name>
         <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-08-19 15:39:35</sys_updated_on>
+        <sys_updated_on>2022-09-15 16:47:09</sys_updated_on>
         <template><![CDATA[<div id="sc_cat_item" ng-if="::(data.recordFound && !data.not_for_mobile)" sn-atf-blacklist="IS_SERVICE_CATALOG">
   <sp-widget widget="c.orderItemModal" ng-if="c.orderItemModal"></sp-widget>
   <div class="row center-block" ng-if="::data.sc_cat_item" ng-class="{'native-mobile': options.native_mobile == 'true'}">
@@ -2051,7 +2077,7 @@ li.cc-section.cc-selected::after {
               <b>${Price}:</b> {{data.sc_cat_item.price_display}}<em ng-if="data.sc_cat_item.recurring_price" class="cat_item_price"> {{data.sc_cat_item.price ? '+' : ''}} {{data.sc_cat_item.recurring_price_display + ' ' + data.sc_cat_item.recurring_price_frequency}}</em>
             </div>
             <div class="m-b text-right" ng-if="c.showDeliveryTime()">
-              <b>${Delivery Time}:</b> {{::data.sc_cat_item.estimated_delivery_time}}
+              ${Estimated Delivery Date}: {{::data.delivery_date}}
             </div>
             <div ng-if="::c.allowOrder()" class="text-right">
               <select id="catItemQuantity"
@@ -2137,7 +2163,7 @@ li.cc-section.cc-selected::after {
               <b>{{data.sc_cat_item.price_display}}</b> <em ng-if="data.sc_cat_item.recurring_price" class="cat_item_price"> {{data.sc_cat_item.price ? '+' : ''}} {{data.sc_cat_item.recurring_price_display + ' ' + data.sc_cat_item.recurring_price_frequency}}</em>
             </div>
             <div class="text-muted" ng-if="c.showDeliveryTime()">
-              ${Delivery Time}: {{::data.sc_cat_item.estimated_delivery_time}}
+              ${Estimated Delivery Date}: {{::data.delivery_date}}
             </div>
           </div>
           <div class="form-group relative" ng-if="c.options.native_mobile != 'true'">
@@ -2145,7 +2171,7 @@ li.cc-section.cc-selected::after {
               <b>${Price}:</b> {{data.sc_cat_item.price_display}}<em ng-if="data.sc_cat_item.recurring_price" class="cat_item_price"> {{data.sc_cat_item.price ? '+' : ''}} {{data.sc_cat_item.recurring_price_display + ' ' + data.sc_cat_item.recurring_price_frequency}}</em>
             </div>
             <div class="form-group" ng-if="c.showDeliveryTime()">
-              <b>${Delivery Time}:</b> {{::data.sc_cat_item.estimated_delivery_time}}
+              ${Estimated Delivery Date}: {{::data.delivery_date}}
             </div>
             <button tabindex="0" ng-if="c.showAddCartBtn()" name="add_to_cart" ng-disabled="disableControls()" ng-click="triggerAddToCart()" class="btn btn-default sc-btn form-control">
               <i class="fa fa fa-shopping-cart sc-order-widget-btn pull-left"></i>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category/>
+        <client_script><![CDATA[function ($scope, $window, spUtil) {
+	var c = this;	
+
+
+
+	c.action = function(state) {
+		if(!$scope.commentExists() && state == 'rejected'){
+			spUtil.addTrivialMessage('Rejection comments cannot be empty');
+			return false;
+		}
+
+		c.data.op = state;
+		c.data.state = state;
+		c.server.update();		
+
+		if(state == 'rejected'){
+			spUtil.addTrivialMessage("Rejection Submitted");
+		}
+		else if( state == 'approved'){
+			spUtil.addTrivialMessage("Approval Submitted");
+		}
+	};	
+
+	//For approval toggle functionality, instead of quick approve
+	$scope.toggleApproval = function(id, approvalValue){
+		c.server.update();
+		if($scope.approval_toggle_state == approvalValue){
+			$scope.approve_class = 'btn-info';
+			$scope.reject_class = 'btn-info';
+			$scope.approval_toggle_state = '';
+		}
+		else if(approvalValue == 'approved'){
+			$scope.approve_class = 'btn-primary';
+			$scope.reject_class = 'btn-info';
+			$scope.approval_toggle_state = approvalValue;
+		}
+		else if(approvalValue == 'rejected'){
+			$scope.reject_class = 'btn-primary';
+			$scope.approve_class = 'btn-info';
+			$scope.approval_toggle_state = approvalValue;
+		}
+	}
+
+	$scope.submitApproval = function(id, esigRequired) {
+			c.action($scope.approval_toggle_state);
+	}
+
+	$scope.commentExists = function(){
+		var answer = !((c.data.comment ==  undefined || c.data.comment ==  ''));
+		return answer;
+	}
+
+	$scope.isRejected = function(id){
+		var answer = ($scope.approval_toggle_state == 'rejected');
+		return answer;
+	}
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.question {
+  text-align: center;
+  margin-top: 1em;
+}
+
+.spacer {
+  display:inline-block;
+  width:5%;
+}
+
+.btn-question {
+	width: 45%;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data>{
+  "data": {
+    "fields": [
+      {
+        "type": "glide_date_time",
+        "value": "2016-01-31T17:33:54+00:00",
+        "label": "Approval Example Label"
+      }
+    ],
+    "state": "requested",
+    "label": "incident"
+  },
+  "options": {
+    "color": "default"
+  }
+}</demo_data>
+        <description/>
+        <docs/>
+        <field_list>color</field_list>
+        <has_preview>true</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link/>
+        <name>Custom Approval Info</name>
+        <option_schema/>
+        <public>false</public>
+        <roles>snc_external,snc_internal</roles>
+        <script><![CDATA[var gr = $sp.getRecord();
+var isItil = gs.hasRole('itil');
+if (input && input.op && gr) { 
+	if (input.comment){
+		gr.comments = input.comment;
+	}
+	gr.state = input.op;
+	gr.update();
+}
+
+
+var fields = $sp.getFields(gr, 'state,sys_created_on');
+
+if (gr) {
+	if (gr.sys_mod_count > 0)
+		fields.push($sp.getField(gr, 'sys_updated_on'));
+	if(isItil && gr){
+		var instance = gs.getProperty('instance_name');
+		var url = 'https://';
+		url += instance;
+		url += '.service-now.com/nav_to.do?uri=sysapproval_approver.do%3Fsys_id=';
+		url += gr.sys_id.toString();
+		fields.push({"label":"Original Record","value":"Click Here to View/Edit","display_value":"Click Here to View/Edit","url":url,"type":"custom_url"});
+	}
+	data.fields = fields;
+	data.state = gr.state.toString();
+	data.sys_updated_on = gr.sys_updated_on.toString();
+	data.sys_id = gr.getUniqueValue();
+	data.table = gr.getTableName();
+	data.label = getRecordBeingApproved(gr).getLabel();
+	data.approveMsg = gs.getMessage("You have approved this request");
+	data.rejectMsg = gs.getMessage("You have rejected this request");
+}
+
+
+
+
+function getRecordBeingApproved(gr) {
+	if (!gr.sysapproval.nil())
+		return gr.sysapproval.getRefRecord();
+
+	return gr.document_id.getRefRecord();
+}]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2017-01-25 14:45:32</sys_created_on>
+        <sys_id>fdcd03550f203200e1f30dbce1050e4e</sys_id>
+        <sys_mod_count>111</sys_mod_count>
+        <sys_name>Custom Approval Info</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
+        <sys_update_name>sp_widget_fdcd03550f203200e1f30dbce1050e4e</sys_update_name>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-09-16 13:29:42</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-primary b">
+  <!-- panel-{{::c.options.color}} -->
+  <div class="panel-heading">
+    <h4 class="panel-title" ng-if="c.data.state == 'requested'">${This {{c.data.label}} requires your approval}</h4>
+    <h4 class="panel-title" ng-if="c.data.state == 'approved'">${Approved} <sn-time-ago timestamp="::c.data.sys_updated_on" /></h4>
+    <h4 class="panel-title" ng-if="c.data.state == 'rejected'">${Rejected} <sn-time-ago timestamp="::c.data.sys_updated_on" /></h4>
+  </div>  
+  <div class="panel-body">
+    <form ng-submit="$event.preventDefault()" class="form-horizontal">
+      <div ng-if="c.data.fields.length > 0">
+        <div ng-repeat="field in c.data.fields" class="m-b-xs" ng-if="field.value">
+          <label class="m-n">{{field.label}}</label>
+          <span ng-switch="field.type">
+            <div ng-switch-when="glide_date_time" title="{{field.display_value}}"><sn-time-ago timestamp="::field.value" /></div>
+            <div ng-switch-when="custom_url" title="{{field.display_value}}"><a href="{{field.url}}" target="_blank">{{field.display_value}}</a></div>
+            <div ng-switch-default >{{field.display_value}}</div>
+          </span>
+        </div>
+      </div>
+      <div ng-if="c.data.state == 'requested'" class="question">
+        <button type="button" name="approve" class="btn btn-block" ng-class="approve_class || 'btn-info'" style="border-width:1px;" ng-click="toggleApproval(approval.sys_id,'approved');">${Approve}</button>
+        <div class="spacer"></div>
+        <button type="button" name="reject" class="btn btn-block" ng-class="reject_class || 'btn-info'" ng-click="toggleApproval(approval.sys_id,'rejected');">${Reject}</button>
+        <textarea ng-model="c.data.comment" id="c.comment" ng-show="approval_toggle_state" placeholder="Comments" class="form-control" rows="5"></textarea>
+
+        </textarea>
+      <button name="submit" id="submit_button" aria-labelledby="submit_button" ng-show="approval_toggle_state" class="btn btn-success btn-block" ng-click="submitApproval();" ng-disabled="!commentExists() && isRejected();">${Submit}</button>
+
+      </div>
+
+    </form>
+</div>  
+</div>]]></template>
+    </sp_widget>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>183466ce85f0000001</claim_timestamp>
+        <metadata_update_name>sp_widget_fdcd03550f203200e1f30dbce1050e4e</metadata_update_name>
+        <previous_claim_app_version>1.0.4</previous_claim_app_version>
+        <previous_claim_name>Custom Service Portal Widgets</previous_claim_name>
+        <previous_claim_scope>526506cc1b89d1508c5143f3cc4bcb99</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-09-16 13:11:26</sys_created_on>
+        <sys_id>08532f541b8695108c5143f3cc4bcb6e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-09-16 13:11:26</sys_updated_on>
+    </sys_claim>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>17eb5d38a520000001</claim_timestamp>
+        <metadata_update_name>sp_widget_fdcd03550f203200e1f30dbce1050e4e</metadata_update_name>
+        <previous_claim_app_version>1.1.0</previous_claim_app_version>
+        <previous_claim_name>Cascading Approvals</previous_claim_name>
+        <previous_claim_scope>22668e5c1b53b45062e50ed2cd4bcbf0</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-09-16 13:11:26</sys_created_on>
+        <sys_id>c8532f541b8695108c5143f3cc4bcb6e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-09-16 13:11:26</sys_updated_on>
+    </sys_claim>
+</record_update>

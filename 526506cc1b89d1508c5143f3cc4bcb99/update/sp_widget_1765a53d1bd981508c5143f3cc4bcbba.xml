@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $window, $timeout, $location, spAriaUtil, cabrillo) {
+  /* widget controller */
+  var c = this;
+	$scope.animateTick = '';
+	$scope.toggle = function($event, item) {
+		item.expand = !item.expand;
+	}
+
+	$scope.isNative = cabrillo.isNative() && c.data.isMEE;
+	var wrapperClassName = $scope.isNative ? "wrapper-xs " : "wrapper-md ";
+	if (c.data.is_new_order) {
+		$timeout(function() {
+			spAriaUtil.sendLiveMessage(c.data.msg.orderSubmitMsg, "status");
+		}, 1000);
+
+		// Set Title in Workspace
+		if ($scope.options.isServiceWorkspace && !$scope.isNative)
+			$window.postMessage({
+				msg:'CATALOG_ITEM_SET_TITLE',
+				title: c.data.msg.pageTitle
+			}, $location.origin);
+	}
+
+	if ($scope.isNative) {
+		cabrillo.viewLayout.setTitle(c.data.msg.pageTitle);
+		cabrillo.viewLayout.hideBackButton();
+	}
+	$scope.actions = {isOpen: false};
+	$scope.field = {
+		ed: {
+			reference: 'sys_user',
+			qualifier: "active=true^EQ"
+		},
+		value:'',
+		isMandatory: function(){ return false;},
+		display_value_list: [],
+		g_form:{
+			$private:{
+				events:{
+					on: function(){}
+				}
+			},
+			setValue: function(name, value, displayValues) {
+				$scope.field.value = value;
+				$scope.field.display_value_list = displayValues;
+				$scope.field.displayValue = displayValues.join(',');
+			}
+		}
+	}
+	
+	$scope.reOrder = function() {
+		if (!$scope.field.value)
+			return;
+		var numOfClones = $scope.field.display_value_list.length;
+		window.GlideWebAnalytics.trackEvent("Service Catalog", "Catalog Post Submission", "Request Cloned", numOfClones);
+		$scope.server.get({userList: $scope.field.value,
+											action: 'clone_request'}).then(function(response) {
+			var progressModalCtrl;
+			var unregister = $scope.$on('$sp.service_catalog.close_cloning', function(){
+				progressModalCtrl.close();
+				$window.location.reload();
+			});
+			var progressModal = angular.copy(response.data.progressModal);
+			progressModal.options.afterOpen = function(ctrl) {
+				progressModalCtrl = ctrl;
+			};
+			progressModal.options.afterClose = function() {
+				unregister();
+				c.progressModal = null;
+				progressModalCtrl = null;
+				$window.location.reload();
+			};
+			c.progressModal = progressModal;
+		});
+	}
+	
+	$scope.displayRequestItemTable = function () {
+		return ((c.options.display_description === 'true') ||
+			(c.options.display_delivery_date === 'true') ||
+			(c.options.display_stage === 'true') ||
+			(c.options.display_price === 'true') ||
+			(c.options.display_quantity === 'true') ||
+			(c.options.display_number === 'true')) && !c.options.isServiceWorkspace;
+	}
+	
+	$scope.getSVGClass = function () {
+		var classForWorkspace = wrapperClassName + "text-center";
+		var svgClass = wrapperClassName + "b-b text-center visible-xs visible-sm";
+		return c.options.isServiceWorkspace ? classForWorkspace : svgClass;
+	}
+	
+	$scope.getOrderInfoClass = function () {
+		var classForWorkspace = wrapperClassName + "text-center";
+		var orderInfoClass = wrapperClassName + "b-b text-sm-center";
+		return c.options.isServiceWorkspace ? classForWorkspace : orderInfoClass;
+	}
+	
+	$scope.viewDetails = function () {
+		window.postMessage({
+				msg:'TARGET_RECORD_SELECTED',
+			  target_number: c.data.currentRecord.number,
+				target_table: c.data.currentRecord.table,
+				target_sys_id: c.data.currentRecord.sys_id
+			}, location.origin);
+	}
+	
+	$timeout(function() {
+		 if ($scope.isNative)
+			 cabrillo.viewLayout.hideSpinner();
+	});
+	
+	$scope.closeTab = function () {
+		if ($scope.isNative) {
+			cabrillo.flowControl.flowEnded();
+			return;
+		}
+		window.postMessage({
+				msg:'CATALOG_ITEM_CLOSED'
+			}, location.origin);
+	}
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.completed-color {
+ color: $brand-success; 
+}
+
+.progress-color {
+ color: $brand-info; 
+}
+
+.text-sm-center {
+ 	text-align: left; 
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: darken($btn-success-bg, 20%);
+  fill: none;
+  animation: stroke .6s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+}
+
+.checkmark {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 2% auto;
+  box-shadow: inset 0px 0px 0px $label-success-bg;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.sc-order-status-button {
+  min-width: 45px;
+  min-height: 45px;
+  font-weight: bold;
+}
+
+@supports not (-ms-ime-align: auto) {
+  .checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) .8s forwards;
+  }
+}
+.status-table {
+  	th {
+      position: sticky;
+      -webkit-position: sticky;
+      top: -1px;
+      background-color: $panel-bg;
+      z-index: 10;
+      box-shadow: 0px 1px 0px $panel-inner-border;
+    }
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 200px darken($btn-success-bg, 20%);
+  }
+}
+
+@media(max-width:992px) {
+  .text-sm-center {
+    text-align: center;
+    padding: 30px;
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>custom_sc_order_status</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Custom SC Order Status</name>
+        <option_schema>[{"hint":"Displays Request Number","name":"display_request_number","default_value":"true","section":"Presentation","label":"Display Request Number","type":"boolean"},{"hint":"Display Request Item column","name":"display_number","default_value":"false","section":"Presentation","label":"Display Request Item","type":"boolean"},{"hint":"Display Name column","name":"display_name","default_value":"true","section":"Presentation","label":"Display Name","type":"boolean"},{"hint":"Display Delivery Date column","name":"display_delivery_date","default_value":"true","section":"Presentation","label":"Display Delivery Date","type":"boolean"},{"hint":"Display Stage column","name":"display_stage","default_value":"true","section":"Presentation","label":"Display Stage","type":"boolean"},{"hint":"Display Price column","name":"display_price","default_value":"true","section":"Presentation","label":"Display Price","type":"boolean"},{"hint":"Display Quantity column","name":"display_quantity","default_value":"true","section":"Presentation","label":"Display Quantity","type":"boolean"},{"hint":"Display Total Price column","name":"display_total_price","default_value":"true","section":"Presentation","label":"Display Total Price","type":"boolean"},{"hint":"Allow cloning of the request for other users","name":"can_clone","section":"Behavior","default_value":"false","label":"Allow Cloning","type":"boolean"}]</option_schema>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	
+	//Request sys_id can be passed as an option 
+	//By default URL parameter is used
+	var request_id = $sp.getParameter('sys_id');
+	
+	if (options && options.hasOwnProperty('request_id_source') && (options.request_id_source === 'widget_options') && options.hasOwnProperty('request_id'))
+		request_id = options.request_id;
+	
+	var user_language = gs.getUser().getLanguage();
+	data.msg = {};
+	data.msg.pageTitle = gs.getMessage('Request Status');
+	data.is_new_order = (($sp.getParameter("is_new_order") + '') === "true");
+	data.isMEE = options.native_mobile == 'true';
+	data.msg.orderSubmitMsg = gs.getMessage('Thank You. Your request has been submitted');
+	
+	if (!request_id)
+		return;
+	
+	if (input && input.action === 'clone_request') {
+		data.progressModal = $sp.getWidget('widget-modal', {
+			embeddedWidgetId: 'request_clone_progress',
+			embeddedWidgetOptions: {sys_id: request_id,
+														 users: input.userList},
+			backdrop: 'static',
+			size: 'lg'
+		});
+		return;
+	}
+	
+	var sc_request = GlideappRequestNew.get(request_id);
+	if (!sc_request || !sc_request.getRequestNumber()) { 
+		if (options.isServiceWorkspace) {
+			var gr = $sp.getRecord();
+			if (gr == null)
+				return;
+	
+			data.canRead = gr.canRead();
+			if (!data.canRead) 
+				return;
+
+			var table = $sp.getParameter('table');
+			if (GlideTableDescriptor.isValid(table)) {
+				data.tableName = GlideTableDescriptor.get(table).getLabel();
+			}
+			
+			var currentRecordNumber = gr.getDisplayValue();
+			data.currentRecord = {};
+			data.currentRecord.number = currentRecordNumber;
+			data.currentRecord.table = table;
+			data.currentRecord.sys_id = gr.getUniqueValue();
+			
+			if (gr.isValidField('universal_request') && !gr.universal_request.nil()) {
+				data.currentRecord.number = gr.universal_request.getDisplayValue();
+				data.tableName = GlideTableDescriptor.get('universal_request').getLabel();
+			}
+			
+		}
+		return;
+	} 
+	data.request = {};
+	data.showPrices = $sp.showCatalogPrices();
+	data.request.id = sc_request.getID();
+	data.request.submitted_on = sc_request.getOpenedAt();
+	data.request.number = sc_request.getRequestNumber();
+	data.request.esimated_delivery = sc_request.getLongestDueDate();
+	data.request.requested_for = sc_request.getRequestedFor();
+	data.request.opened_by = sc_request.getOpenedBy();
+	data.request.show_estimated_delivery = false;
+	data.request.show_requested_for = sc_request.canShowRequestedFor();
+	data.request.universal_request = sc_request.getUniversalRequestNumber();
+	
+	if (options.isServiceWorkspace) {
+			data.currentRecord = {};
+			data.currentRecord.number = sc_request.getRequestNumber();
+			data.currentRecord.table = 'sc_request';
+			data.currentRecord.sys_id = sc_request.getID();
+	}
+	
+	var reqItemGr = new GlideRecord('sc_req_item');
+	reqItemGr.addQuery('request', request_id);
+	reqItemGr.query();
+	data.request.requestItems = [];
+	var spCurrencyFormatter = new SPCurrencyFormatter();
+	data.totalPrice = 0;
+	data.frequencyMap = {};
+	var gr = new GlideRecord('sys_choice');
+	gr.addQuery('name', 'sys_frequency');
+	gr.addQuery('language', user_language);
+	gr.orderBy('sequence');
+	gr.query();
+	while(gr.next()) {
+		data.frequencyMap[gr.value] = {
+			display_value: gr.label.getDisplayValue(),
+			value: 0,
+			sequence: gr.getValue('sequence')
+		};
+	}
+	var recurringPrice = {};
+	while(reqItemGr.next()) {
+		var catItem = new sn_sc.CatItem(reqItemGr.cat_item).getItemSummary(true);
+		var frequency = reqItemGr.recurring_frequency.getValue();
+		var frequency_dv  = reqItemGr.recurring_frequency.getDisplayValue();
+		var itemTotalPrice = reqItemGr.price * reqItemGr.quantity.getValue();
+		data.totalPrice += itemTotalPrice;
+		var itemTotalRecurringPrice = reqItemGr.recurring_price * reqItemGr.quantity.getValue();
+		data.totalRecurringPrice += itemTotalRecurringPrice;
+		if (recurringPrice[frequency])
+			recurringPrice[frequency] += itemTotalRecurringPrice;
+		else
+			recurringPrice[frequency] = itemTotalRecurringPrice;
+
+		var showItemPrice = $sp.showPrice(itemTotalPrice);
+		var showItemRecurringPrice = $sp.showRecurringPrice(itemTotalRecurringPrice, frequency_dv);
+
+		if (catItem.show_delivery_time)
+			data.request.show_estimated_delivery = true;
+
+		var ritm = new SNC.RequestItem(reqItemGr);
+		
+		data.request.requestItems.push({
+			sys_id: reqItemGr.sys_id.getValue(),
+			name: catItem.name,
+			delivery_date: ritm.getDeliveryDueDate(),
+			stage: reqItemGr.stage.getValue(),
+			number: reqItemGr.number.getValue(),
+			quantity: reqItemGr.quantity.getValue(),
+			show_quantity: (catItem.show_quantity || reqItemGr.cat_item.u_cdw_item.toString().toLowerCase() === 'true'),
+			show_delivery_time: catItem.show_delivery_time,
+			price: parseFloat(reqItemGr.price.getValue()),
+			price_dv: reqItemGr.price.getDisplayValue(),
+			recurring_price: parseFloat(reqItemGr.recurring_price.getValue()),
+			recurring_price_dv: reqItemGr.recurring_price.getDisplayValue() + ' ' + frequency_dv,
+			requested_for: reqItemGr.getDisplayValue("requested_for"),
+			requested_for_id: reqItemGr.getValue("requested_for"),
+			showPrice: showItemPrice,
+			showRecurringPrice: showItemRecurringPrice,
+			total_price: itemTotalPrice,
+			total_price_dv: spCurrencyFormatter.format(itemTotalPrice),
+			total_reccuring_price: itemTotalRecurringPrice,
+			total_reccuring_price_dv: spCurrencyFormatter.format(itemTotalRecurringPrice)  + ' ' + frequency_dv,
+			stageWidget : $sp.getWidget("66a761bd1bd981508c5143f3cc4bcbfa", {req_item_id: reqItemGr.sys_id.getValue(), onload_expand_request_item_stages: false})
+		});
+	}
+	var subTotalPrice = data.totalPrice + data.totalRecurringPrice;
+	data.showSubTotalPrices = $sp.showPrice(subTotalPrice);
+	data.totalPrice = spCurrencyFormatter.format(data.totalPrice);
+	data.request.recurringPrice = [];
+	for (var property in recurringPrice) {
+    if (recurringPrice.hasOwnProperty(property) && data.frequencyMap[property]) {
+			var val = recurringPrice[property];
+			if (val > 0) {
+				data.request.recurringPrice.push({
+						sequence: parseInt(data.frequencyMap[property].sequence),
+						val: spCurrencyFormatter.format(val),
+						val_dv: data.frequencyMap[property].display_value
+					});
+      }
+    }
+	}
+	data.request.recurringPrice.sort(function(a, b){return a.sequence - b.sequence;});
+	var roles = gs.getProperty('glide.sc.allow.clone.roles', '');
+	data.sys_properties = {
+		canClone: roles == '' || gs.hasRole(roles)
+	};
+	
+	$sp.logStat('Order Status View', 'sc_request', request_id, "", $sp.getPortalRecord().getUniqueValue());
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-01-27 16:54:04</sys_created_on>
+        <sys_id>1765a53d1bd981508c5143f3cc4bcbba</sys_id>
+        <sys_mod_count>10</sys_mod_count>
+        <sys_name>Custom SC Order Status</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
+        <sys_update_name>sp_widget_1765a53d1bd981508c5143f3cc4bcbba</sys_update_name>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-09-16 13:11:25</sys_updated_on>
+        <template><![CDATA[<div>
+  <div class="panel panel-default" ng-if="::!data.request && (!options.isServiceWorkspace || !data.currentRecord)">
+    <div class="wrapper-md b-b">
+      <h4>${Request not found}</h4>
+    </div>
+  </div>
+</div>
+<div class="panel panel-default" ng-if="::data.request || (options.isServiceWorkspace && data.currentRecord)">
+  <div ng-Class="getSVGClass()" ng-if="::data.is_new_order">
+    <svg alt="" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+      <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+      <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg> 
+    <div class="text-center text-success">
+      ${Thank you}!<br>
+      ${Your request has been submitted}.
+    </div>
+  </div>
+  <div ng-Class="getOrderInfoClass()">
+    <div class="text-left inline" ng-if="::data.request">
+      <div class="text-muted">
+        ${Submitted} : {{::data.request.submitted_on}}
+      </div>
+      <div class="text-muted" ng-if="(options.display_request_number === 'true') && ((options.isServiceWorkspace && !data.isMEE) || data.request.universal_request == '')">
+        ${Request Number} : <b>{{::data.request.number}}</b>
+      </div>
+      <div class="text-muted" ng-if="data.request.universal_request">
+        ${Universal Request Number} : <b>{{::data.request.universal_request}}</b>
+      </div>
+      <div class="text-muted" ng-if="data.request.opened_by !== data.request.requested_for">
+       ${Requested For} : {{::data.request.requested_for}}
+      </div>
+      <div class="text-muted" ng-if="::options.display_delivery_date == 'true'">
+        ${Estimated Delivery} : {{::data.request.show_estimated_delivery ? data.request.esimated_delivery : '--'}}
+      </div>
+    </div>
+    <div class="text-left inline" ng-if="::!data.request && (options.isServiceWorkspace && data.currentRecord)">
+      <div class="text-muted">
+        {{::data.tableName}} ${record} : <b>{{::data.currentRecord.number}} </b>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid" ng-if="::options.isServiceWorkspace || isNative"> 
+    <div class="row">
+      <div class="wrapper-md column col-md-12 text-center">
+        <button name="close" aria-label="${Close}" class="btn" ng-class="isNative ? 'btn-primary sc-order-status-button' : 'btn-default'" role="button" ng-click="closeTab()">${Close}</button> 
+        <button name="viewDetails" ng-click="viewDetails()" aria-label="${View Details}" ng-class="{'sc-order-status-button': c.isNative}" class="btn sc-btn btn-primary m-l-xs" sn-focus="true" role="button" ng-if="!isNative">${View Details}</button> 
+      </div>
+    </div> 
+	</div>
+  <div style="overflow-x:auto;">
+    <table class="table table-striped status-table" ng-if="::data.request.requestItems.length && displayRequestItemTable()" aria-label='${Request summary}' aria-describedby='id-request-summary-caption'>
+    	<caption id='id-request-summary-caption'><span class="sr-only">${Request summary}</span></caption>
+      <thead>
+        <tr>
+          <th id="id-header-number" scope="col" class="wrapper-md" ng-if="::options.display_number === 'true'">${Request Item}</th>
+          <th id="id-header-name" scope="col" class="wrapper-md col-md-2" ng-if="::options.display_name === 'true'">${Item}</th>
+          <th id="id-header-requested-for" scope="col" class="wrapper-md col-md-2" ng-if="::data.request.show_requested_for">${Requested For}</th>
+          <th id="id-header-delivery-date" scope="col" class="wrapper-md col-md-2" ng-if="::options.display_delivery_date === 'true'">${Delivery Date}</th>
+          <th id="id-header-stage" scope="col" class="wrapper-md col-md-3" ng-if="::options.display_stage === 'true'">${Stage}</th>
+          <th id="id-header-price" scope="col" class="wrapper-md col-md-2" ng-if="::(options.display_price === 'true' && data.showSubTotalPrices)">${Price} (${each})</th>
+          <th id="id-header-quantity" scope="col" class="wrapper-md col-md-1" ng-if="::options.display_quantity === 'true'">${Quantity}</th>
+          <th id="id-header-total-price" scope="col" class="wrapper-md col-md-2" ng-if="::(options.display_total_price === 'true' && data.showSubTotalPrices)">${Total}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="requestItem in ::data.request.requestItems">
+          <td headers="id-header-number" class="wrapper-md" ng-if="::options.display_number === 'true'">
+            <a title="{{::requestItem.number}}" href="?id=ticket&table=sc_req_item&sys_id={{requestItem.sys_id}}&view=sp"
+              ng-if="::requestItem.number">{{::requestItem.number}}</a>
+          </td>
+          <td header="id-header-name" class="wrapper-md" ng-if="::options.display_name === 'true'">
+            <a title="{{::requestItem.name}}" href="?id=ticket&table=sc_req_item&sys_id={{requestItem.sys_id}}&view=sp"
+              ng-if="::requestItem.name">{{::requestItem.name}}</a>
+          </td>
+          <td header="id-header-requested-for" class="wrapper-md text-overflow-ellipsis" ng-if="::data.request.show_requested_for">
+            <a title="{{::requestItem.requested_for}}" href="?id=user_profile&sys_id={{requestItem.requested_for_id}}&view=sp"
+              ng-if="::requestItem.requested_for">{{::requestItem.requested_for}}</a>
+          </td>
+          <td header="id-header-delivery-date" class="wrapper-md" ng-if="::options.display_delivery_date === 'true'">
+            <span ng-if="::(requestItem.delivery_date && requestItem.show_delivery_time)">{{requestItem.delivery_date}}</span>
+            <span class="sr-only" ng-if="::(requestItem.delivery_date && !requestItem.show_delivery_time)">${blank}</span>
+            <span ng-if="::(requestItem.delivery_date && !requestItem.show_delivery_time)" aria-hidden=true>--</span>
+          </td>
+          <td header="id-header-stage" class="wrapper-md" ng-if="::options.display_stage === 'true'">
+            <sp-widget widget="::requestItem.stageWidget"></sp-widget>
+          </td>
+          <td header="id-header-price" class="wrapper-md" ng-if="::(options.display_price === 'true' && data.showSubTotalPrices)">
+            <div ng-if="::requestItem.showPrice"> &nbsp;&nbsp;&nbsp;{{::requestItem.price_dv}}</div>
+            <div ng-if="::requestItem.showRecurringPrice"><span>{{::requestItem.showPrice ? '+' : '' }} <span class="sr-only">${Recurring price}</span>{{::requestItem.recurring_price_dv}}</span></div>
+            <span class="sr-only" ng-if="::(!requestItem.showPrice && !requestItem.showRecurringPrice)">${blank}</span>
+            <div ng-if="::(!requestItem.showPrice && !requestItem.showRecurringPrice)" aria-hidden=true>
+              	---
+            </div>
+          </td>
+          <td header="id-header-quantity" class="wrapper-md" ng-if="::options.display_quantity === 'true'">{{::requestItem.show_quantity ? requestItem.quantity : '--'}}</td>
+          <td header="id-header-total-price" class="wrapper-md" ng-if="::(options.display_total_price === 'true' && data.showSubTotalPrices)">
+            <div ng-if="::requestItem.showPrice">&nbsp;&nbsp;&nbsp;{{::requestItem.total_price_dv}}</div>
+            <div ng-if="::requestItem.showRecurringPrice"><span>{{::requestItem.showPrice ? '+' : '' }} <span class="sr-only">${Recurring price}</span>{{::requestItem.total_reccuring_price_dv}}</span></div>
+            <span class="sr-only" ng-if="::(!requestItem.showPrice && !requestItem.showRecurringPrice)">${blank}</span>
+            <div ng-if="::(!requestItem.showPrice && !requestItem.showRecurringPrice)" aria-hidden=true>
+              ---
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="wrapper-md b-t hidden-sm hidden-xs" ng-if="::(options.display_total_price === 'true' && data.showSubTotalPrices) && !options.isServiceWorkspace && !isNative">
+    <div class="text-muted text-right">
+      <div class="h4 text-bold">${Total}: {{::data.totalPrice}}</div>
+      <div class="h5 text-bold" ng-repeat="rec in ::data.request.recurringPrice"> + {{rec.val}} {{rec.val_dv}}</div>
+    </div>
+  </div>
+</div>
+<uib-accordion>
+  <uib-accordion-group class="accordion-header b" is-open="actions.isOpen" ng-if="::(data.sys_properties.canClone && options.can_clone == 'true' && data.request && !options.isServiceWorkspace && !isNative)" template-url="orderStatusAccordionTemplate.html">
+    <uib-accordion-heading>
+      <div class="row panel-title h4">
+        	<span tabindex="0" role="button" class="fa accordion-icon" ng-class="actions.isOpen ? 'fa-chevron-up' : 'fa-chevron-down'" aria-expanded="{{actions.isOpen}}" aria-label="${Additional Actions}" >
+        </span>
+        ${Additional Actions}
+      </div>
+    </uib-accordion-heading>
+    <div class="row">
+      <div class="panel-body">
+          <div class="form-group">
+            <label class="field-label" for="sp_formfield_{{::field.name}}">
+              ${Also request for}
+              <i class="fa fa-info-circle" title="${To place the same request for additional users}" tabindex="0" data-toggle="tooltip" data-placement="right"></i>
+            </label>
+            <span>
+              <sp-reference-element  sn-select-width="100%" 
+                                    field="field" glide-form="field.g_form"
+                                    sn-options="{multiple: true, placeholder: '${Please select additional users}'}" />
+            </span>
+          </div>
+          <button class="btn btn-primary pull-right" ng-click="reOrder()">${Submit}</button>
+      </div>
+      <sp-widget widget="c.progressModal" ng-if="c.progressModal"></sp-widget>
+    </div>
+  </uib-accordion-group>
+</uib-accordion>]]></template>
+    </sp_widget>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>183466ce8070000001</claim_timestamp>
+        <metadata_update_name>sp_widget_1765a53d1bd981508c5143f3cc4bcbba</metadata_update_name>
+        <previous_claim_app_version>1.0.4</previous_claim_app_version>
+        <previous_claim_name>Custom Service Portal Widgets</previous_claim_name>
+        <previous_claim_scope>526506cc1b89d1508c5143f3cc4bcb99</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-09-16 13:11:25</sys_created_on>
+        <sys_id>4c532f541b8695108c5143f3cc4bcb68</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-09-16 13:11:25</sys_updated_on>
+    </sys_claim>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</claim_owner_scope>
+        <claim_timestamp>182034ac77d0000001</claim_timestamp>
+        <metadata_update_name>sp_widget_1765a53d1bd981508c5143f3cc4bcbba</metadata_update_name>
+        <previous_claim_app_version>1.1.10</previous_claim_app_version>
+        <previous_claim_name>CDW Ordering Integration</previous_claim_name>
+        <previous_claim_scope>4630a8861ba9851062e50ed2cd4bcb61</previous_claim_scope>
+        <sys_created_by>Terry.Lillo</sys_created_by>
+        <sys_created_on>2022-09-16 13:11:25</sys_created_on>
+        <sys_id>00532f541b8695108c5143f3cc4bcb69</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-09-16 13:11:25</sys_updated_on>
+    </sys_claim>
+</record_update>

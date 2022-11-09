@@ -117,6 +117,7 @@ var fields = $sp.getFields(gr, 'state,sys_created_on');
 if (gr) {
 	if (gr.sys_mod_count > 0)
 		fields.push($sp.getField(gr, 'sys_updated_on'));
+	fields.push($sp.getField(gr, "u_approval_is_for"));
 	if(isItil && gr){
 		var instance = gs.getProperty('instance_name');
 		var url = 'https://';
@@ -149,14 +150,14 @@ function getRecordBeingApproved(gr) {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2017-01-25 14:45:32</sys_created_on>
         <sys_id>fdcd03550f203200e1f30dbce1050e4e</sys_id>
-        <sys_mod_count>111</sys_mod_count>
+        <sys_mod_count>120</sys_mod_count>
         <sys_name>Custom Approval Info</sys_name>
         <sys_package display_value="Global" source="global">global</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_widget_fdcd03550f203200e1f30dbce1050e4e</sys_update_name>
-        <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-09-16 13:29:42</sys_updated_on>
+        <sys_updated_by>John.Schwab</sys_updated_by>
+        <sys_updated_on>2022-10-18 18:54:06</sys_updated_on>
         <template><![CDATA[<div class="panel panel-primary b">
   <!-- panel-{{::c.options.color}} -->
   <div class="panel-heading">
@@ -171,6 +172,7 @@ function getRecordBeingApproved(gr) {
           <label class="m-n">{{field.label}}</label>
           <span ng-switch="field.type">
             <div ng-switch-when="glide_date_time" title="{{field.display_value}}"><sn-time-ago timestamp="::field.value" /></div>
+            <div ng-switch-when="string" title="{{field.display_value}}">{{field.display_value}}</div>
             <div ng-switch-when="custom_url" title="{{field.display_value}}"><a href="{{field.url}}" target="_blank">{{field.display_value}}</a></div>
             <div ng-switch-default >{{field.display_value}}</div>
           </span>

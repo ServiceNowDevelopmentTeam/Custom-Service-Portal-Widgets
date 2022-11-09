@@ -35,17 +35,75 @@
 			$window.location.reload();
 		});
 	}
+	
+	function goForward(direction) {
+		if(direction){
+			if(c.nav.hasNext() && c.nav.getState() == 'Loaded'){
+					console.log('moving forward');
+					c.nav.next();
+					//observe(elem);
+				}
+		}
+		else{
+			if(c.nav.hasPrevious() && c.nav.getState() == 'Loaded'){
+					console.log('moving back');
+					c.nav.previous();
+					//observe(elem);
+			}
+		}
+	}
 
-
+	var observer = new IntersectionObserver(function(entries) {
+			console.log('observing');
+			if(entries[0].isIntersecting === true){
+				console.log('Element is on screen');
+			}
+			else{
+				console.log('else not visible');
+				if(c.nav.hasNext() && c.nav.getState() == 'Loaded'){
+					console.log('moving forward');
+					goForward(true);
+					//c.nav.next();
+					//observe(elem);
+				}
+				else if(c.nav.hasPrevious() && c.nav.getState() == 'Loaded'){
+					console.log('moving back');
+					goForward(false);
+					//c.nav.previous();
+					//observe(elem);
+				}
+			}
+			console.log('observer over function');
+		}, { threshold: [0] });
 	$scope.getFocus = function(field) {
+		console.log('search trigger');
 		var focusVar = (field.type == "reference") ? "sp_formfield_reference_" : "sp_formfield_";
 		focusVar += (field.name.startsWith("IO:") ? field._children[0]:field.name);
 		var elem = document.getElementById(focusVar);
+		
 		if (field.type == "url" && elem.style.display == "none")
 			elem = document.getElementById(focusVar+"_unlock");
 		else if (field.type == "sc_multi_row")
 			elem = document.getElementById(field.sys_id+"_add_row");
-		elem.focus();
+		//elem.focus();
+		
+		
+		
+		observer.observe(elem);
+		console.log('observe over');
+		
+		/*
+		while(!observer.observe(elem)){
+			if(c.nav.hasNext()){
+				c.nav.next();
+			}
+			else if(c.nav.hasPrevious()){
+				c.nav.previous();
+			}
+			elem.focus();
+		}*/
+		
+		
 	}
 
 	c.quantity = c.data.quantity ? c.data.quantity + "" : "1";
@@ -1967,14 +2025,14 @@ li.cc-section.cc-selected::after {
         <sys_created_by>Terry.Lillo</sys_created_by>
         <sys_created_on>2022-07-27 18:40:11</sys_created_on>
         <sys_id>2675c2cc1b89d1508c5143f3cc4bcbc4</sys_id>
-        <sys_mod_count>441</sys_mod_count>
+        <sys_mod_count>479</sys_mod_count>
         <sys_name>SC Catalog Item Paginated</sys_name>
         <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_widget_2675c2cc1b89d1508c5143f3cc4bcbc4</sys_update_name>
-        <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-09-15 16:47:09</sys_updated_on>
+        <sys_updated_by>John.Schwab</sys_updated_by>
+        <sys_updated_on>2022-11-01 19:49:00</sys_updated_on>
         <template><![CDATA[<div id="sc_cat_item" ng-if="::(data.recordFound && !data.not_for_mobile)" sn-atf-blacklist="IS_SERVICE_CATALOG">
   <sp-widget widget="c.orderItemModal" ng-if="c.orderItemModal"></sp-widget>
   <div class="row center-block" ng-if="::data.sc_cat_item" ng-class="{'native-mobile': options.native_mobile == 'true'}">

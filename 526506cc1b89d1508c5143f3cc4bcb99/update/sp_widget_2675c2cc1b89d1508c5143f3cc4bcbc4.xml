@@ -3,7 +3,7 @@
         <category>sc</category>
         <client_script><![CDATA[function (CatalogItemNavigator, $scope, $http, spScUtil, spUtil, nowAttachmentHandler, $rootScope, $sanitize, $window, $sce, i18n, $timeout, $log, spAriaUtil, $document, spModal, $q, spAtf, $location, spAriaFocusManager, spSCNavStateManager, cabrillo, snAnalytics) {
 
-		CatalogItemNavigator.initialize();
+	
 	var c = this;
 	c.isNative = cabrillo.isNative() && c.data.isMEE == 'true';
 	var webAnalyticsMsgSuffix = c.isNative ? " - NOW Mobile" : "";
@@ -11,23 +11,20 @@
 		c.nav = CatalogItemNavigator;
 		c.data.sc_cat_item._attachmentGUID = $scope.data._generatedItemGUID;
 	}
+
 	$scope.$on('spModel.gForm.initialized', function(e,gFormInstance) {
+		CatalogItemNavigator.initialize();
 		CatalogItemNavigator.load(c.data.catItemId, gFormInstance);
 	});
 	
 	$scope.$on("$destroy", function() {
 		CatalogItemNavigator.initialize();
 	});
-	function timeout() {
-		setTimeout(function () {
-			console.log(CatalogItemNavigator.getSections().length);
-			timeout();
-		}, 5000);
-	}
+
 	$scope.setDefaultValue = !$scope.data.is_cart_item && !$scope.data.is_wishlist_item;
 
 	$scope.disableControls = function(){
-		return $scope.submitting || $scope.submitted || c.data.isPreview;
+		return $scope.submitting || $scope.submitted;
 	}
 
 	if (c.data.isPreview) {
@@ -39,16 +36,12 @@
 	function goForward(direction) {
 		if(direction){
 			if(c.nav.hasNext() && c.nav.getState() == 'Loaded'){
-					console.log('moving forward');
 					c.nav.next();
-					//observe(elem);
 				}
 		}
 		else{
 			if(c.nav.hasPrevious() && c.nav.getState() == 'Loaded'){
-					console.log('moving back');
 					c.nav.previous();
-					//observe(elem);
 			}
 		}
 	}
@@ -63,17 +56,11 @@
 				if(c.nav.hasNext() && c.nav.getState() == 'Loaded'){
 					console.log('moving forward');
 					goForward(true);
-					//c.nav.next();
-					//observe(elem);
 				}
 				else if(c.nav.hasPrevious() && c.nav.getState() == 'Loaded'){
-					console.log('moving back');
 					goForward(false);
-					//c.nav.previous();
-					//observe(elem);
 				}
 			}
-			console.log('observer over function');
 		}, { threshold: [0] });
 	$scope.getFocus = function(field) {
 		console.log('search trigger');
@@ -85,25 +72,7 @@
 			elem = document.getElementById(focusVar+"_unlock");
 		else if (field.type == "sc_multi_row")
 			elem = document.getElementById(field.sys_id+"_add_row");
-		//elem.focus();
-		
-		
-		
 		observer.observe(elem);
-		console.log('observe over');
-		
-		/*
-		while(!observer.observe(elem)){
-			if(c.nav.hasNext()){
-				c.nav.next();
-			}
-			else if(c.nav.hasPrevious()){
-				c.nav.previous();
-			}
-			elem.focus();
-		}*/
-		
-		
 	}
 
 	c.quantity = c.data.quantity ? c.data.quantity + "" : "1";
@@ -2025,14 +1994,14 @@ li.cc-section.cc-selected::after {
         <sys_created_by>Terry.Lillo</sys_created_by>
         <sys_created_on>2022-07-27 18:40:11</sys_created_on>
         <sys_id>2675c2cc1b89d1508c5143f3cc4bcbc4</sys_id>
-        <sys_mod_count>479</sys_mod_count>
+        <sys_mod_count>494</sys_mod_count>
         <sys_name>SC Catalog Item Paginated</sys_name>
         <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_widget_2675c2cc1b89d1508c5143f3cc4bcbc4</sys_update_name>
-        <sys_updated_by>John.Schwab</sys_updated_by>
-        <sys_updated_on>2022-11-01 19:49:00</sys_updated_on>
+        <sys_updated_by>Terry.Lillo</sys_updated_by>
+        <sys_updated_on>2022-11-14 21:33:05</sys_updated_on>
         <template><![CDATA[<div id="sc_cat_item" ng-if="::(data.recordFound && !data.not_for_mobile)" sn-atf-blacklist="IS_SERVICE_CATALOG">
   <sp-widget widget="c.orderItemModal" ng-if="c.orderItemModal"></sp-widget>
   <div class="row center-block" ng-if="::data.sc_cat_item" ng-class="{'native-mobile': options.native_mobile == 'true'}">

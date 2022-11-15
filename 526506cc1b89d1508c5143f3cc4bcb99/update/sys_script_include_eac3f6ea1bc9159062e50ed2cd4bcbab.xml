@@ -30,6 +30,7 @@
 		multirow.query();
 		while (multirow.next()) {
 			containerMap[multirow.sys_id.toString()].containers.push(multirow.internal_name.toString());
+			containerMap[multirow.sys_id.toString()].mrvs_names.push(multirow.internal_name.toString());
 		}
 	}
 	
@@ -43,7 +44,8 @@
 			'key': section.sys_id.toString(),
 			'order': section.order.toString(),
 			'sys_id': section.sys_id.toString(),
-			'containers': []
+			'containers': [],
+			'mrvs_names': []
 		};
 		results.push(result);
 		
@@ -71,13 +73,13 @@
         <sys_created_by>Terry.Lillo</sys_created_by>
         <sys_created_on>2022-08-04 16:27:33</sys_created_on>
         <sys_id>eac3f6ea1bc9159062e50ed2cd4bcbab</sys_id>
-        <sys_mod_count>1</sys_mod_count>
+        <sys_mod_count>6</sys_mod_count>
         <sys_name>getDefinedSectionsForItem</sys_name>
         <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sys_script_include_eac3f6ea1bc9159062e50ed2cd4bcbab</sys_update_name>
         <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-08-04 16:42:04</sys_updated_on>
+        <sys_updated_on>2022-11-15 14:22:44</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -46,24 +46,12 @@
 		}
 	}
 
-	var observer = new IntersectionObserver(function(entries) {
-			console.log('observing');
-			if(entries[0].isIntersecting === true){
-				console.log('Element is on screen');
-			}
-			else{
-				console.log('else not visible');
-				if(c.nav.hasNext() && c.nav.getState() == 'Loaded'){
-					console.log('moving forward');
-					goForward(true);
-				}
-				else if(c.nav.hasPrevious() && c.nav.getState() == 'Loaded'){
-					goForward(false);
-				}
-			}
-		}, { threshold: [0] });
 	$scope.getFocus = function(field) {
-		console.log('search trigger');
+		
+		//console.log('get focus triggered with : ' + field);
+		//console.log('had mandatory : ' + field.name);
+		//console.log('type? : ' + field.type);
+		/* DEPRECATED?
 		var focusVar = (field.type == "reference") ? "sp_formfield_reference_" : "sp_formfield_";
 		focusVar += (field.name.startsWith("IO:") ? field._children[0]:field.name);
 		var elem = document.getElementById(focusVar);
@@ -72,7 +60,59 @@
 			elem = document.getElementById(focusVar+"_unlock");
 		else if (field.type == "sc_multi_row")
 			elem = document.getElementById(field.sys_id+"_add_row");
-		observer.observe(elem);
+		*/
+		
+		var focusVar = (field.type == "reference") ? "sp_formfield_reference_" : "sp_formfield_";
+		focusVar += (field.name.startsWith("IO:") ? field._children[0]:field.name);
+		var elem = document.getElementById(focusVar);
+		
+		
+		if (field.type == "url" && elem.style.display == "none")
+			elem = document.getElementById(focusVar+"_unlock");
+		else if (field.type == "sc_multi_row")
+			elem = document.getElementById(field.sys_id+"_add_row");
+		else if (field.type != "html") {
+			var inputElem = angular.element(elem).find('input')[0];
+			if (inputElem)
+				elem = inputElem;
+		}
+		//console.log('element : ' + elem);
+		
+		
+		if (elem){
+			if(elem.focus() != 'NULL'){
+				//console.log('active element : ' + document.activeElement.toString());
+				
+				if(document.activeElement.toString() === '[object HTMLDivElement]' || document.activeElement.toString() === '[object HTMLButtonElement]'){
+					//console.log('else not visible');
+							if(c.nav.hasNext() && c.nav.getState() == 'Loaded'){
+								//goForward(true);
+								if(c.nav.next() != 'NULL'){
+									//$scope.getFocus(field);
+									
+								}
+							}
+							else if(c.nav.hasPrevious() && c.nav.getState() == 'Loaded'){
+								//console.log('moving back');
+								//c.nav.getState() == 'Loaded'
+								//goForward(false);
+								if(c.nav.previous() != 'NULL'){
+									//$scope.getFocus(field);
+								}
+							}
+				}
+			}
+		}
+		
+		
+		
+		
+		//Attempt to get the element using document.getElementById
+		
+		
+		
+		
+		//deleteObserver(observer);
 	}
 
 	c.quantity = c.data.quantity ? c.data.quantity + "" : "1";
@@ -663,6 +703,8 @@
 
 	$scope.triggerOnSubmit = function(timeout) {
 		if (c.data.isPreview) return;
+		
+		
 
 		$scope.data.sc_cat_item.item_action = "order";
 		$scope.data.sc_cat_item.quantity = c.quantity;
@@ -670,6 +712,11 @@
 			if (g_form && !$scope.submitting) {
 				$scope.submitting = true;
 				spAriaUtil.sendLiveMessage($scope.m.submittingMsg);
+				
+				
+				if($scope.hasMandatory()){
+						$scope.getFocus(c.mandatory[0]);
+				}
 				if (!spScUtil.isRegexDone($scope.data.sc_cat_item._fields)) {
 					$scope.submitting = false;
 					$scope.validating = true;
@@ -1994,14 +2041,14 @@ li.cc-section.cc-selected::after {
         <sys_created_by>Terry.Lillo</sys_created_by>
         <sys_created_on>2022-07-27 18:40:11</sys_created_on>
         <sys_id>2675c2cc1b89d1508c5143f3cc4bcbc4</sys_id>
-        <sys_mod_count>494</sys_mod_count>
+        <sys_mod_count>511</sys_mod_count>
         <sys_name>SC Catalog Item Paginated</sys_name>
         <sys_package display_value="Custom Service Portal Widgets" source="526506cc1b89d1508c5143f3cc4bcb99">526506cc1b89d1508c5143f3cc4bcb99</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_widget_2675c2cc1b89d1508c5143f3cc4bcbc4</sys_update_name>
-        <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-11-14 21:33:05</sys_updated_on>
+        <sys_updated_by>John.Schwab</sys_updated_by>
+        <sys_updated_on>2022-11-22 18:15:22</sys_updated_on>
         <template><![CDATA[<div id="sc_cat_item" ng-if="::(data.recordFound && !data.not_for_mobile)" sn-atf-blacklist="IS_SERVICE_CATALOG">
   <sp-widget widget="c.orderItemModal" ng-if="c.orderItemModal"></sp-widget>
   <div class="row center-block" ng-if="::data.sc_cat_item" ng-class="{'native-mobile': options.native_mobile == 'true'}">

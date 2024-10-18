@@ -6,7 +6,8 @@ background-color: #545859;&#13;
 &#13;
 }</css>
         <draft>false</draft>
-        <dynamic_title_structure>%name</dynamic_title_structure>
+        <dynamic_title_structure>%item_name</dynamic_title_structure>
+        <human_readable_url_structure/>
         <id>sc_cat_item</id>
         <internal>false</internal>
         <omit_watcher>false</omit_watcher>
@@ -18,14 +19,14 @@ background-color: #545859;&#13;
         <sys_created_by>fredex</sys_created_by>
         <sys_created_on>2014-09-20 18:52:33</sys_created_on>
         <sys_id>9f12251147132100ba13a5554ee490f4</sys_id>
-        <sys_mod_count>30</sys_mod_count>
+        <sys_mod_count>31</sys_mod_count>
         <sys_name>sc_cat_item</sys_name>
         <sys_package display_value="Service Portal - Service Catalog (do not activate...see plugin description)" source="com.glide.service-portal.service-catalog">303a60af1b251010e7004229bc4bcbfd</sys_package>
         <sys_policy/>
         <sys_scope display_value="Custom Service Portal Widgets">526506cc1b89d1508c5143f3cc4bcb99</sys_scope>
         <sys_update_name>sp_page_9f12251147132100ba13a5554ee490f4</sys_update_name>
         <sys_updated_by>Terry.Lillo</sys_updated_by>
-        <sys_updated_on>2022-08-02 19:56:20</sys_updated_on>
+        <sys_updated_on>2023-07-14 15:45:54</sys_updated_on>
         <title>Catalog Item</title>
         <use_seo_script>false</use_seo_script>
     </sp_page>
